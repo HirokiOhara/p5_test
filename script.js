@@ -1,87 +1,32 @@
-// Spring drawing constants for top bar
-let springHeight = 32,
-    left,
-    right,
-    maxHeight = 200,
-    minHeight = 100,
-    over = false,
-    move = false;
 
-// Spring simulation constants
-let M = 0.8,  // Mass
-    K = 0.2,  // Spring constant
-    D = 0.92, // Damping
-    R = 150;  // Rest position
+ // this variable will hold our shader object
+ let theShader;
+ // this variable will hold our webcam video
+ let cam;
 
-// Spring simulation variables
-let ps = R,   // Position
-    vs = 0.0, // Velocity
-    as = 0,   // Acceleration
-    f = 0;    // Force
+ function preload(){
+   // load the shader
+   theShader = loadShader('assets/webcam.vert', 'assets/webcam.frag');
+ }
 
-function setup() {
-  createCanvas(710, 400);
-  rectMode(CORNERS);
-  noStroke();
-  left = width / 2 - 100;
-  right = width / 2 + 100;
-}
+ function setup() {
+   // shaders require WEBGL mode to work
+   createCanvas(710, 400, WEBGL);
+   noStroke();
 
-function draw() {
-  background(102);
-  updateSpring();
-  drawSpring();
-}
+   cam = createCapture(VIDEO);
+   cam.size(710, 400);
 
-function drawSpring() {
-  // Draw base
-  fill(0.2);
-  let baseWidth = 0.5 * ps + -8;
-  rect(width / 2 - baseWidth, ps + springHeight, width / 2 + baseWidth, height);
+   cam.hide();
+ }
 
-  // Set color and draw top bar
-  if (over || move) {
-    fill(255);
-  } else {
-    fill(204);
-  }
+ function draw() {
+   // shader() sets the active shader with our shader
+   shader(theShader);
 
-  rect(left, ps, right, ps + springHeight);
-}
+   // passing cam as a texture
+   theShader.setUniform('tex0', cam);
 
-function updateSpring() {
-  // Update the spring position
-  if ( !move ) {
-    f = -K * ( ps - R ); // f=-ky
-    as = f / M;          // Set the acceleration, f=ma == a=f/m
-    vs = D * (vs + as);  // Set the velocity
-    ps = ps + vs;        // Updated position
-  }
-
-  if (abs(vs) < 0.1) {
-    vs = 0.0;
-  }
-
-  // Test if mouse if over the top bar
-  if (mouseX > left && mouseX < right && mouseY > ps && mouseY < ps + springHeight) {
-    over = true;
-  } else {
-    over = false;
-  }
-
-  // Set and constrain the position of top bar
-  if (move) {
-    ps = mouseY - springHeight / 2;
-    ps = constrain(ps, minHeight, maxHeight);
-  }
-}
-
-function mousePressed() {
-  if (over) {
-    move = true;
-  }
-}
-
-function mouseReleased() {
-  move = false;
-}
+   // rect gives us some geometry on the screen
+   rect(0,0,width,height);
+ }
