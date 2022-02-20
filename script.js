@@ -85,15 +85,15 @@ function mouseReleased() {
 //=====「キー操作」=====
 function keyPressed() {
   //"スペース"を押したら「リセット」
-  if (key == " ") {
-    background(240);
+  if (key === " ") {
+    background(200);
   }
-  if (key == "r") {
+  if (key ==="r") {
     //"r"を押したら墨が「朱色」になる
     stroke(235, 97, 1);
     fill(235, 97, 1);
   }
-  if (key == "b") {
+  if (key === "b") {
     //"b"を押したら「墨色」になる
     stroke(54, 54, 54);
     fill(54, 54, 54);
