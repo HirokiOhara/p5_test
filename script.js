@@ -1,56 +1,101 @@
-let cx, cy;
-let secondsRadius;
-let minutesRadius;
-let hoursRadius;
-let clockDiameter;
+const R = 20; //しずくの大きさ調整用
+const A = 3; //しずくの丸み調整用
+let lineWeight = 0.6;
+let i;
+let count = 1;
+
 
 function setup() {
-  createCanvas(720, 400);
-  stroke(255);
-
-  let radius = min(width, height) / 2;
-  secondsRadius = radius * 0.71;
-  minutesRadius = radius * 0.6;
-  hoursRadius = radius * 0.5;
-  clockDiameter = radius * 1.7;
-
-  cx = width / 2;
-  cy = height / 2;
+  smooth();
+  frameRate(60);
+  createCanvas(750, 1057);
+  background(200);
+  stroke(54, 54, 54);
+  fill(54, 54, 54);
 }
 
 function draw() {
-  background(230);
-
-  // Draw the clock background
-  noStroke();
-  fill(244, 122, 158);
-  ellipse(cx, cy, clockDiameter + 25, clockDiameter + 25);
-  fill(237, 34, 93);
-  ellipse(cx, cy, clockDiameter, clockDiameter);
-
-  // Angles for sin() and cos() start at 3 o'clock;
-  // subtract HALF_PI to make them start at the top
-  let s = map(second(), 0, 60, 0, TWO_PI) - HALF_PI;
-  let m = map(minute() + norm(second(), 0, 60), 0, 60, 0, TWO_PI) - HALF_PI;
-  let h = map(hour() + norm(minute(), 0, 60), 0, 24, 0, TWO_PI * 2) - HALF_PI;
-
-  // Draw the hands of the clock
-  stroke(255);
-  strokeWeight(1);
-  line(cx, cy, cx + cos(s) * secondsRadius, cy + sin(s) * secondsRadius);
-  strokeWeight(2);
-  line(cx, cy, cx + cos(m) * minutesRadius, cy + sin(m) * minutesRadius);
-  strokeWeight(4);
-  line(cx, cy, cx + cos(h) * hoursRadius, cy + sin(h) * hoursRadius);
-
-  // Draw the minute ticks
-  strokeWeight(2);
-  beginShape(POINTS);
-  for (let a = 0; a < 360; a += 6) {
-    let angle = radians(a);
-    let x = cx + cos(angle) * secondsRadius;
-    let y = cy + sin(angle) * secondsRadius;
-    vertex(x, y);
+  if (mouseIsPressed) {
+    strokeWeight(lineWeight);
+    mouseDragged();
   }
-  endShape();
+}
+
+//=====「始筆」=====
+function mousePressed() {
+  strokeWeight(2);
+  push();
+  translate(mouseX, mouseY + 3);
+  rotate(radians(-150));
+  beginShape();
+  for (let theta = 10; theta < 361; theta++) {
+    let r = 1 / (A * sin(radians(theta) / 2) + 1);
+    vertex(R * r * cos(radians(theta)), R * r * sin(radians(theta)));
+  }
+  endShape(CLOSE);
+  pop();
+  redraw();
+  // for (let i = 0; i < 100; i++) {
+  //   let x = random(i);
+  //   let y = sqrt(sq(i) - sq(x));
+  //   ppointsX[i] = x;
+  //   ppointsY[i] = y;
+  // }
+}
+
+//=====「運筆」=====
+function mouseDragged() {
+  for (let i = 0; i < 10; i++) {
+    let x = random(i);
+    let y = sqrt(sq(i) - sq(x));
+    for (let i = 0; i < 10; i++) {
+      line(pmouseX, pmouseY, mouseX, mouseY);
+      line(pmouseX + x, pmouseY - y, mouseX + x, mouseY - y); //右上
+      line(
+        pmouseX + x * 0.8,
+        pmouseY + y * 0.8,
+        mouseX + x * 0.8,
+        mouseY + y * 0.8
+      ); //右下
+      line(
+        pmouseX - x * 0.5,
+        pmouseY - y * 0.5,
+        mouseX - x * 0.5,
+        mouseY - y * 0.5
+      ); //左上
+      line(
+        pmouseX - x * 0.9,
+        pmouseY + y * 0.9,
+        mouseX - x * 0.9,
+        mouseY + y * 0.9
+      ); //左下
+    }
+    line(pmouseX - x, pmouseY + y, mouseX, mouseY); //右下&左上
+    line(pmouseX - x, pmouseY - y, mouseX, mouseY); //右上&左下
+  }
+  // ppointsX[i] = x;
+  // ppointsY[i] = y;
+}
+
+//=====「筆先を整える」=====
+function mouseReleased() {
+  lineWeight = 0.6;
+}
+
+//=====「キー操作」=====
+function keyPressed() {
+  //"スペース"を押したら「リセット」
+  if (key == " ") {
+    background(240);
+  }
+  if (key == "r") {
+    //"r"を押したら墨が「朱色」になる
+    stroke(235, 97, 1);
+    fill(235, 97, 1);
+  }
+  if (key == "b") {
+    //"b"を押したら「墨色」になる
+    stroke(54, 54, 54);
+    fill(54, 54, 54);
+  }
 }
