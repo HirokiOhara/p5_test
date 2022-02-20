@@ -87,7 +87,11 @@ function keyPressed() {
   //"スペース"を押したら「リセット」
   if (key === " ") {
     background(200);
-  } else if (key ==="r") {
+  }
+}
+
+function keyTyped() {
+  if (key ==="r") {
     //"r"を押したら墨が「朱色」になる
     stroke(235, 97, 1);
     fill(235, 97, 1);
