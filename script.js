@@ -91,7 +91,7 @@ function keyPressed() {
 }
 
 function keyTyped() {
-  if (key ==="r") {
+  if (key === "r") {
     //"r"を押したら墨が「朱色」になる
     stroke(235, 97, 1);
     fill(235, 97, 1);
